@@ -19,20 +19,19 @@ def printGrid(grid:list[list[str]]) -> None:
 
 
 def slice(arr:list[int] | list[tuple[int, int]], start: int, exclusive_end:int) -> list[int] | list[tuple[int, int]]:
-    """ Returns a subarray of the input array, bounded by indices start and exclusive end
+    """ 
+    Returns a subarray of the input array, bounded by indices start and exclusive end
 
     Keyword arguments:
-    arr -- the input array to the function
-    start -- the starting index of the subarray to be created
-    exclusive end -- the index the subarray stops before
+   :param arr: (list) the input array to the function
+   :param start: (int) the starting index of the subarray to be created
+   :param exclusive end: (int) the index the subarray stops before
+   : return copy_array: (list) the subarray created from the input array
 
-    Example:
-    Given the parameters:
-    arr= [1, 3, 2, 5, 7]; start=1, exclusive_end = 3
-    It returns an array copy:
+    >>> slice([1,3,2,5,7], 1, 3)
     [3, 2]
-    
     """
+
     index:int = 0
 
     copy_array:list[tuple[int, int]] | list[int] = new_array(exclusive_end - start)
@@ -48,20 +47,20 @@ def slice(arr:list[int] | list[tuple[int, int]], start: int, exclusive_end:int) 
 
 # Problem 1: SQUARES
 def squares(grid:list[list[str]]) -> None:
-    """ Prints the total number of white cell regions and their sizes (number of cells)
+    """ 
+    Prints the total number of white cell regions and their sizes (number of cells)
 
     Keyword arguments:
-    grid -- a 2D-list containing chars 'b' and 'w' to represent black and white cells
+    :param grid: (list(list)) a 2D-list containing chars 'b' and 'w' to represent black and white cells
 
-    Example:
-    Given the parameters:
+    
     grid = [['b', 'w'],
             ['w', 'b']]
-    Prints out:
+    >>> squares(grid)
     "The white areas in the grid have the following number of cells: 1, 1,"
-    "In total, there are 2 areas of white cells"
-    
+    "In total, there are 2 areas of white cells"   
     """
+
     count_areas:int = 0
 
     # counts the number of areas
@@ -73,28 +72,26 @@ def squares(grid:list[list[str]]) -> None:
                 count_areas += 1
                 print(f"{squareHelper(grid, row, col)}", end = ", ")
     
-    print(f"\nIn total, there are {count_areas} areas of white cells.")
+    print(f"\nIn total, there are {count_areas} areas of white cells")
 
 def squareHelper(grid:list[list[str]], row:int, col:int) -> int:
-    """ Helper function: Returns the number of white cells in a white-cell region
+    """ 
+    Helper function: Returns the number of white cells in a white-cell region
 
     Keyword arguments:
-    grid -- the input parent 2D-list
-    row -- index of the inner array containing the white region
-    col -- index of the first white cell found within the inner array
-
-
-    Example:
-    Given the parameters:
+    :param grid: (list(list)) the input parent 2D-list
+    :param row: (int) index of the inner array containing the white region
+    :param col: (nt) index of the first white cell found within the inner array
+    :return: (int) the number of white cells in the white region
+    
     grid = [['b', 'b', 'b', 'b'],
             ['b', 'b', 'w', 'b'],
             ['b', 'w', 'b', 'b'],
             ['b', 'b', 'b', 'b']]
-    row = 1, col = 2
-    Returns:
+    >>> squareHelper(grid, 1, 2)
     1
-    
     """
+
     if grid[row][col] != 'w':
         return 0
     
@@ -113,16 +110,14 @@ def inversions(arr:list[int]) -> int:
     Returns the number of inversions in an array and prints it out
 
     Keyword arguments:
-    arr -- an input array of ints
+    :param arr: (list(int)) an input array of ints
+    :return answer: (int) the number of inversions in the input array
 
-    Example: 
-    Given the parameters:
-    [1, 3, 5, 2, 6]
-    Returns:
+    >>> inversions([1,3,5,2,4,6])
     3
-    Prints:
     "There are 3 inversions in [1, 3, 5, 2, 6]"
     """
+
     print(f"The inversions are: ", end = " ")
     result_list: list[int] # type: ignore
     answer: int
@@ -135,14 +130,13 @@ def invert(arr:list[int]) -> tuple[list[int], int]:
     Helper function: Divides a list and uses the invertChecker function to return a remerged list with the number of inversions
 
     Keyword arguments:
-    arr -- an input array of ints
+    :param arr: (list(int)) an input array of ints
+    :return result_list, answer: (list), (int) the remerged list and the number of inversions
 
-    Example: 
-    Given the parameters:
-    [1, 3, 5, 2, 4, 6]
-    Returns (at the final recursive step)
+    >>> invert([1,3,5,2,4,6])
     [1, 3, 5, 2, 4, 6], 3
     """
+
     answer:int
     left_list: list[int]
     right_list: list[int]
@@ -175,9 +169,8 @@ def invertChecker(arr1:list[int], arr2:list[int]) -> tuple[list[int], int]:
     >>> invertChecker([1,3,5], [2,4,6])
     [1, 3, 5, 2, 4, 6], 3
     """
-    merged: list[int]
 
-    merged = new_array(len(arr1) + len(arr2))
+    merged:list[int] = new_array(len(arr1) + len(arr2))
     index = 0
     invert_count = 0
     itr1, itr2 = 0, 0
@@ -213,7 +206,19 @@ def invertChecker(arr1:list[int], arr2:list[int]) -> tuple[list[int], int]:
 """Great job, Olohi-- next step: Find a way to avoid the duplicates. DOn't worry too much about it tho. Focus on providing new tests in your main function and putting in docstrings in prep for submission
 pass"""
 
+
 def points(point_list:list[tuple[float, float]]) -> None:
+    """
+    Prints the two closest points (or set of two closest points) and their distance apart
+    
+    Keyword arguments:
+    :param point_list: (list(tuple)) a list of tuples representing points in the 2D plane
+
+    >>> points((-2,2),(-2,0),(0,0),(1,1),(3,3),(4,0),(5,2))
+    The pair(s) with the minimum distance, 1.4142135623730951, apart are:
+    [(0, 0), (1,1)],
+    """
+
     # check if point_list is less than 2,return None if so
     if len(point_list) < 2:
         return None
@@ -235,6 +240,17 @@ def points(point_list:list[tuple[float, float]]) -> None:
 # Return the two closest points (or set of two closest points)
 # Breaks the resulting list into two until list <= 3 elems and then bruteforce euclid calculation
 def pointsHelper(sorted_points: list[tuple[float, float]]) -> tuple[list[tuple[float, float]], float]:
+    """
+    Helper function: Returns the two closest points (or set of two closest points) and their distance apart
+
+    Keyword arguments:
+    :param sorted_points: (list(tuple)) a list of tuples representing points in the 2D plane, sorted by x-coordinate
+    :return min_points, minimum: (list(tuple)), (float) the set of closest points and their distance apart
+
+    >>> pointsHelper([(-2,2),(-2,0),(0,0),(1,1),(3,3),(4,0),(5,2)])
+    [(0,0), (1,1)], 1.4142135623730951
+    """
+
     # base case 1
     # if len(list) <= 1: return the list and float('inf')
     if len(sorted_points) <= 1:
@@ -246,7 +262,6 @@ def pointsHelper(sorted_points: list[tuple[float, float]]) -> tuple[list[tuple[f
     min_points: list[tuple[float, float]] = [(float('inf'), float('inf'))] * maximum_closest_points
     mp_index:int = 0
     min_points[mp_index] = sorted_points[0]
-
     
     # base case2
     # if len(list) <= 3: calculate euclid between all point pairs and return closest points and their distance
@@ -355,12 +370,21 @@ def pointsHelper(sorted_points: list[tuple[float, float]]) -> tuple[list[tuple[f
                 min_points[1] = across_mid_array[j]
                 mp_index = 2
 
-
     # return min_points, minimum
     return min_points, minimum
 
 
 def mergeSortPoints(point_list:list[tuple[float, float]]) -> list[tuple[float, float]]:
+  """
+  Sorts a list of points (tuples) based on their x-coordinates
+  
+  Keyword arguments:
+  :param point_list: (list(tuple)) a list of tuples representing points in the 2D plane
+  :return: (list(tuple)) the sorted list of points
+
+  >>> mergeSortPoints([(-2,2), (0,0), (-2,0),(3,3),(1,1),(5,2),(4,0)])
+  [(-2, 2), (-2, 0), (0, 0), (1, 1), (3, 3), (4, 0), (5, 2)]
+  """
   # Return a sorted list with the same elements as <lst>
   # Base case
   if len(point_list) < 2:
@@ -375,6 +399,17 @@ def mergeSortPoints(point_list:list[tuple[float, float]]) -> list[tuple[float, f
 
 
 def mergeHelper(lst1: list[tuple[float, float]], lst2: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """
+    Helper function: Merges two lists of points (tuples) based on their x-coordinates
+
+    Keyword arguments:
+    :param lst1: (list(tuple)) a list of tuples representing points in the 2D plane
+    :param lst2: (list(tuple)) a list of tuples representing points in the 2D plane
+    :return: (list(tuple)) the merged list of points
+
+    >>> mergeHelper([(-2,2), (0,0), (-2,0)], [(3,3),(1,1),(5,2),(4,0)])
+    [(-2, 2), (-2, 0), (0, 0), (1, 1), (3, 3), (4, 0), (5, 2)]
+    """ 
     itr1 = 0
     itr2 = 0
     index = 0
@@ -403,6 +438,17 @@ def mergeHelper(lst1: list[tuple[float, float]], lst2: list[tuple[float, float]]
 
 
 def euclid(point1: tuple[float, float], point2: tuple[float, float]) -> float:
+    """
+    Returns the Euclidean distance between two points in the 2D plane
+
+    Keyword arguments:
+    :param point1: (tuple) a tuple representing a point in the 2D plane
+    :param point2: (tuple) a tuple representing a point in the 2D plane
+    :return: (float) the Euclidean distance between the two points
+
+    >>> euclid((0,0), (1,1))
+    1.4142135623730951
+    """
     return ((point1[0] - point2[0])**2 + (point1[1]-point2[0])**2)**0.5
   
     
