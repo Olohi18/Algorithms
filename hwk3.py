@@ -225,9 +225,11 @@ def invertChecker(arr1:list[int], arr2:list[int]) -> tuple[list[int], int]:
     return merged, invert_count
 
 # Problem 3: POINTS
-"""Great job, Olohi-- next step: Find a way to avoid the duplicates. DOn't worry too much about it tho. Focus on providing new tests in your main function and putting in docstrings in prep for submission
-pass"""
-
+"""Assumptions
+    - point_list doesn't contain duplicate entries, ie no one point is featured twice
+    Note
+    - As a trade-off for its ability to return all points with minimum distance, a lot of space (and time) is utilized
+"""
 
 def points(point_list:list[tuple[float, float]]) -> None:
     """
@@ -499,9 +501,10 @@ def isIn(list: list[tuple[float, float]], tuple1:tuple[float,float], tuple2:tupl
     """
     i:int = start
     j:int = start+1
-    while i < end-1 and list[i] != (float('inf'), float('inf')) and list[j] != (float('inf'), float('inf')):
-        if (list[i] == tuple1 and list[j] == tuple2) or (list[j] == tuple1 and list[i] == tuple2):
-            return True
+    while i < end-1:
+        if list[i] != (float('inf'), float('inf')) and list[j] != (float('inf'), float('inf')):
+            if (list[i] == tuple1 and list[j] == tuple2) or (list[j] == tuple1 and list[i] == tuple2):
+                return True
         i += 1
         j += 1
     
@@ -585,7 +588,6 @@ def main(): # Test your code here.
     points1:list[tuple[float, float]] = [(-2,2),(-2,0),(0,0),(1,1),(3,3),(4,0),(5,2)] #[(0,0), (1,1)]
     points2:list[tuple[float, float]] = [(-2,2),(0,0),(-2,0),(1,1),(4,0),(3,3)] #[(0,0), (1,1)]
     points3:list[tuple[float, float]] = [(3, 3), (-2, 0), (1, 1), (-2, 2), (0, 0), (-1, -1), (-1,1)] #[(-2, 0), (-1, -1)], [(-1, 1), (0, 0)], [(0, 0), (1, 1)], [(-1, -1), (0, 0)], [(-2, 2), (-1, 1)], [(-2, 0), (-1, 1)], [(0, 0), (-1, 1)], 
-    points4:list[tuple[float, float]] = [(0,0), (0,0), (2, 5), (3,3), (3,3)] # do not handle-- shouldn't receive duplicates: part of assumption
     points6:list[tuple[float, float]] = [(2.5,1.5), (1.5, 2.5), (3.5,2.5)] # [(2.5, 1.5), (1.5, 2.5)], [(2.5, 1.5), (3.5, 2.5)]
     points7:list[tuple[float, float]] = [(0.5,-0.5), (-0.5, 0.5), (1.5,0.5)] # [(0.5,-0.5), (-0.5, 0.5)], [(0.5, -0.5), (1.5,0.5)]
     points5:list[tuple[float, float]] = []
@@ -594,8 +596,6 @@ def main(): # Test your code here.
     points(points2)
     print()
     points(points3)
-    print()
-    points(points4)
     print()
     points(points6)
     print()
