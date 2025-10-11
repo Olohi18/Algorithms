@@ -1,8 +1,6 @@
 # Name:  - Olohi Goodness John
 # Peers:  - Sanjana Yasna, Isabelle Wang, TAs (not sure if they count but Maggie and Molly)
 # References:  - URL of resources used <br>
-i: list[int]
-j: int
 
 ### Didn't add docstrings for these because of the "DO NOT EDIT" command
 ### DO NOT EDIT ###
@@ -18,15 +16,15 @@ def printGrid(grid:list[list[str]]) -> None:
 ### END OF DO NOT EDIT BLOCK ###
 
 
-def slice(arr:list[int] | list[tuple[int, int]], start: int, exclusive_end:int) -> list[int] | list[tuple[int, int]]:
+def slice(arr:list[int], start: int, exclusive_end:int) -> list[int]:
     """ 
     Returns a subarray of the input array, bounded by indices start and exclusive end
 
     Keyword arguments:
-   :param arr: (list) the input array to the function
-   :param start: (int) the starting index of the subarray to be created
-   :param exclusive end: (int) the index the subarray stops before
-   : return copy_array: (list) the subarray created from the input array
+    :param arr: (list) the input array to the function
+    :param start: (int) the starting index of the subarray to be created
+    :param exclusive end: (int) the index the subarray stops before
+    :return copy_array: (list) the subarray created from the input array
 
     >>> slice([1,3,2,5,7], 1, 3)
     [3, 2]
@@ -35,6 +33,30 @@ def slice(arr:list[int] | list[tuple[int, int]], start: int, exclusive_end:int) 
     index:int = 0
 
     copy_array:list[tuple[int, int]] | list[int] = new_array(exclusive_end - start)
+    while start < exclusive_end and start < len(arr):
+        copy_array[index] = arr[start]
+        index += 1
+        start += 1
+
+    return copy_array
+
+def sliceTuple(arr:list[tuple[float, float]], start: int, exclusive_end:int) -> list[tuple[float, float]]:
+    """ 
+    Returns a subarray of the input array, bounded by indices start and exclusive end
+
+    Keyword arguments:
+    :param arr: (list) the input array to the function
+    :param start: (int) the starting index of the subarray to be created
+    :param exclusive end: (int) the index the subarray stops before
+    :return copy_array: (list) the subarray created from the input array
+
+    >>> slice([1,3,2,5,7], 1, 3)
+    [3, 2]
+    """
+
+    index:int = 0
+
+    copy_array:list[tuple[float, float]] = [(0,0)] * (exclusive_end - start)
     while start < exclusive_end and start < len(arr):
         copy_array[index] = arr[start]
         index += 1
@@ -89,17 +111,17 @@ def squareHelper(grid:list[list[str]], row:int, col:int) -> int:
             ['b', 'w', 'b', 'b'],
             ['b', 'b', 'b', 'b']]
     >>> squareHelper(grid, 1, 2)
-    1
+    2
     """
 
     if grid[row][col] != 'w':
         return 0
     
     grid[row][col] = 'x'
-    up = squareHelper(grid, row-1, col)
-    down = squareHelper(grid, row+1, col)
-    left = squareHelper(grid, row, col-1)
-    right = squareHelper(grid, row, col+1)
+    up:int = squareHelper(grid, row-1, col)
+    down:int = squareHelper(grid, row+1, col)
+    left:int = squareHelper(grid, row, col-1)
+    right:int = squareHelper(grid, row, col+1)
 
     return 1 + up + down + left + right
             
@@ -180,7 +202,7 @@ def invertChecker(arr1:list[int], arr2:list[int]) -> tuple[list[int], int]:
             invert_count += len(arr1)-itr1
             print_ptr:int = itr1
             while print_ptr < len(arr1):
-                print(f"{arr2[itr2]} and {arr1[print_ptr]}", end = "; ")
+                print(f"{arr1[print_ptr]} and {arr2[itr2]}", end = "; ")
                 print_ptr+=1
             merged[index] = arr2[itr2]
             itr2 += 1
@@ -221,6 +243,7 @@ def points(point_list:list[tuple[float, float]]) -> None:
 
     # check if point_list is less than 2,return None if so
     if len(point_list) < 2:
+        print(f"List must contain at least two pairs of points")
         return None
     # sort the points based on x, and pass that to the pointsHelper function
     sorted_points: list[tuple[float, float]] = mergeSortPoints(point_list)
@@ -230,12 +253,11 @@ def points(point_list:list[tuple[float, float]]) -> None:
     print(f"The pair(s) with the minimum distance, {min_distance}, apart are:")
     # print the set of points closest together
     for i in range(0, len(min_points), 2):
-        if min_points[i][0] == float('inf'):
+        if min_points[i][0] == float('inf') or isIn(min_points, min_points[i], min_points[i+1], 0, i-1):
             continue
         print(f"{[min_points[i], min_points[i+1]]}", end = ", ")
     print()
     
-
 
 # Return the two closest points (or set of two closest points)
 # Breaks the resulting list into two until list <= 3 elems and then bruteforce euclid calculation
@@ -270,7 +292,16 @@ def pointsHelper(sorted_points: list[tuple[float, float]]) -> tuple[list[tuple[f
             for j in range(i+1, len(sorted_points)):
                 distance = euclid(sorted_points[i], sorted_points[j])
                 if distance < minimum:
+                    """reset mp_index to 0"""
+                    maximum_closest_points:int = len(sorted_points) * (len(sorted_points)-1) 
+                    min_points: list[tuple[float, float]] = [(float('inf'), float('inf'))] * maximum_closest_points
+                    mp_index:int = 0
                     minimum = distance
+                    min_points[mp_index] = sorted_points[i]
+                    mp_index += 1
+                    min_points[mp_index] = sorted_points[j]
+                    mp_index += 1
+                elif (distance == minimum):
                     min_points[mp_index] = sorted_points[i]
                     mp_index += 1
                     min_points[mp_index] = sorted_points[j]
@@ -288,79 +319,82 @@ def pointsHelper(sorted_points: list[tuple[float, float]]) -> tuple[list[tuple[f
     left_distance: float
     right_distance: float
     # get closest points and distance for the left and right parts of the list
-    left_points, left_distance = pointsHelper(slice(sorted_points, 0, mid_index+1))
-    right_points, right_distance = pointsHelper(slice(sorted_points, mid_index, len(sorted_points)))
+    left_points, left_distance = pointsHelper(sliceTuple(sorted_points, 0, mid_index))
+    right_points, right_distance = pointsHelper(sliceTuple(sorted_points, mid_index, len(sorted_points)))
 
     # compare distances from both recursive calls and store the appropriate min_points, minimum
-    if left_distance < right_distance: # break to two separate statements
+    if left_distance < right_distance and left_distance < minimum: # break to two separate statements
         minimum = left_distance
         # add closest points from left call to the list tracker, min_points
         for i in range(len(left_points)):
+            if left_points[i] == (float('inf'), float('inf')):
+                break
             min_points[mp_index] = left_points[i]
             mp_index += 1
-    elif right_distance < left_distance:
+    elif right_distance < left_distance and right_distance < minimum:
         minimum = right_distance
         # add closest points from right call to the list tracker, min_points
         for i in range(len(right_points)):
+            if right_points[i] == (float('inf'), float('inf')):
+                break
             min_points[mp_index] = right_points[i]
             mp_index += 1
     else: # distances are equal
-        minimum = left_distance
-        # add closest points from both calls to the list tracker, min_points
-        for i in range(len(left_points)):
-            min_points[mp_index] = left_points[i]
-            mp_index += 1
-        for i in range(len(right_points)):
-            min_points[mp_index] = right_points[i]
-            mp_index += 1
+        if left_distance < minimum:
+            minimum = left_distance
+            # add closest points from both calls to the list tracker, min_points
+            for i in range(len(left_points)):
+                if right_points[i] == (float('inf'), float('inf')):
+                    break
+                min_points[mp_index] = left_points[i]
+                mp_index += 1
+            for i in range(len(right_points)):
+                if right_points[i] == (float('inf'), float('inf')):
+                    break
+                min_points[mp_index] = right_points[i]
+                mp_index += 1
 
     # move left from the mid_point and check for elements within x distance mid_x - minimum
     itr:int = mid_index-1
     count:int = 0
     # have a pointer iterate through from before and after mid_point to find all elements d/2 distance from the mid_point on both sides
     # count the number of ints within the range to know the size of the array to store the points in
-    while itr >= 0 and mid_point[0]-minimum < sorted_points[itr][0]:
+    while itr >= 0 and mid_point[0]-minimum <= sorted_points[itr][0]:
         count += 1
         itr -= 1
     itr = mid_index+1
-    print(f"current elem, {sorted_points[itr][0]} <= {mid_point[0]+minimum}")
-    print(f"mid_x = {mid_point[0]} and hor distance = {minimum}")
-    while itr < len(sorted_points) and sorted_points[itr][0] <= mid_point[0]+minimum:
+    while itr < len(sorted_points) and sorted_points[itr][0] < mid_point[0]+minimum:
         count += 1
         itr += 1
-    print(f"count is {count}")
+
     # create a new array of size count+1, with +1 accounting for the midpoint which wasn't counted
     across_mid_array:list[tuple[float, float]] = [(0, 0)] * (count+1)
     index:int = 0
-
     itr = mid_index-1
     # repeat the step, but this time, storing them in across_mid_array
-    while itr >= 0 and mid_point[0]-minimum < sorted_points[itr][0]:
+    while itr >= 0 and mid_point[0]-minimum <= sorted_points[itr][0]:
         across_mid_array[index] = sorted_points[itr]
         itr -= 1
         index += 1
     itr = mid_index+1
-    print(f"index to add to is {index}")
-    while itr < len(sorted_points) and sorted_points[itr][0] <= mid_point[0]+minimum:
+    while itr < len(sorted_points) and sorted_points[itr][0] < mid_point[0]+minimum:
         across_mid_array[index] = sorted_points[itr]
         itr += 1
         index += 1
-    # across_mid_array[index] = sorted_points[mid_index]
+    across_mid_array[index] = sorted_points[mid_index]
 
 
-    # print(f"the mid array is {across_mid_array}")
     # perform brute force euclid on elements within the range, ie elements in across_mid_array
     for i in range(len(across_mid_array)):
         for j in range(i+1, len(across_mid_array)):
             distance = euclid(across_mid_array[i], across_mid_array[j])
-            print(f"distance is {distance}")
             # update as necessary
             if distance == minimum:
+                minimum = distance
                 min_points[mp_index] = across_mid_array[i]
                 mp_index += 1
                 min_points[mp_index] = across_mid_array[j]
                 mp_index += 1
-                print(f"min_points is {min_points}")
             elif distance < minimum and distance != 0:
                 minimum = distance
                 maximum_closest_points:int = len(sorted_points) * (len(sorted_points)-1) # maximum number of connections/edges in a graph with n vertices = n(n-1)/2
@@ -449,33 +483,126 @@ def euclid(point1: tuple[float, float], point2: tuple[float, float]) -> float:
     >>> euclid((0,0), (1,1))
     1.4142135623730951
     """
-    return ((point1[0] - point2[0])**2 + (point1[1]-point2[0])**2)**0.5
+    return ((point1[0] - point2[0])**2 + (point1[1]-point2[1])**2)**0.5
+
+def isIn(list: list[tuple[float, float]], tuple1:tuple[float,float], tuple2:tuple[float,float],start:int, end:int) -> bool:
+    """
+    Checks whether an edge, two points, have been seen in a list range
+
+    Keyword arguments:
+    :param list: (list(tuple)) the list to be searched
+    :param tuple1: (tuple) first point of points pair
+    :param tuple2: (tuple) second point of points pait
+    :param start: (int) start index of range to be searched
+    :param end: (int) end index of range to be searched
+
+    """
+    i:int = start
+    j:int = start+1
+    while i < end-1 and list[i] != (float('inf'), float('inf')) and list[j] != (float('inf'), float('inf')):
+        if (list[i] == tuple1 and list[j] == tuple2) or (list[j] == tuple1 and list[i] == tuple2):
+            return True
+        i += 1
+        j += 1
+    
+    return False
   
     
 
 
 def main(): # Test your code here.
-    # example_grid = [["b","b","b","b","b","b","b","b","b","b"],
-    #     ["b","w","b","b","w","w","b","w","w","b"],
-    #     ["b","b","b","b","b","w","b","w","w","b"],
-    #     ["b","w","w","w","b","b","w","w","w","b"],
-    #     ["b","w","b","w","b","w","w","b","b","b"],
-    #     ["b","w","b","w","w","w","b","w","b","b"],
-    #     ["b","w","b","b","b","b","w","w","w","b"],
-    #     ["b","w","b","w","b","b","w","w","w","b"],
-    #     ["b","w","b","w","b","b","w","w","w","b"],
-    #     ["b","b","b","b","b","b","b","b","b","b"]]
-    # printGrid(example_grid)
-    # squares(example_grid)
+    # Tests: Problem 1 (Squares)
+    # Assumptions: n>= 2 because for an empty array (m x m), making it (m+2 x m+2) makes it non-empty
+    grid1:list[list[str]] = [
+        ["b","b","b","b","b","b","b","b","b","b"],
+        ["b","w","b","b","w","w","b","w","w","b"],
+        ["b","b","b","b","b","w","b","w","w","b"],
+        ["b","w","w","w","b","b","w","w","w","b"],
+        ["b","w","b","w","b","w","w","b","b","b"],
+        ["b","w","b","w","w","w","b","w","b","b"],
+        ["b","w","b","b","b","b","w","w","w","b"],
+        ["b","w","b","w","b","b","w","w","w","b"],
+        ["b","w","b","w","b","b","w","w","w","b"],
+        ["b","b","b","b","b","b","b","b","b","b"]]
+    grid2:list[list[str]] = [
+        ["b","b","b","b","b","b","b","b","b","b"],
+        ["b","w","w","w","w","w","w","w","w","b"],
+        ["b","w","w","w","w","w","w","w","w","b"],
+        ["b","w","w","w","w","w","w","w","w","b"],
+        ["b","w","w","w","w","w","w","w","w","b"],
+        ["b","w","w","w","w","w","w","w","w","b"],
+        ["b","w","w","w","w","w","w","w","w","b"],
+        ["b","w","w","w","w","w","w","w","w","b"],
+        ["b","w","w","w","w","w","w","w","w","b"],
+        ["b","b","b","b","b","b","b","b","b","b"]]
+    grid3:list[list[str]] = [
+        ["b", "b"],
+        ["b", "b"]
+    ]
+    grid4:list[list[str]] = [
+        ["b","b","b","b","b","b","b","b"],
+        ["b","w","w","w","b","w","w","b"],
+        ["b","w","w","w","b","w","w","b"],
+        ["b","w","w","w","b","w","w","b"],
+        ["b","w","b","b","w","w","w","b"],
+        ["b","w","b","w","w","w","w","b"],
+        ["b","w","b","w","w","w","w","b"],
+        ["b","b","b","b","b","b","b","b"]]
+    grid5:list[list[str]] = [
+        ['b', 'b', 'b', 'b'],
+        ['b', 'b', 'w', 'b'],
+        ['b', 'w', 'b', 'b'],
+        ['b', 'b', 'b', 'b']]
     
-    # example_array = [1,3,5,2,4,6]
-    # inversions(example_array)
+    squares(grid1) # 5 areas: [1, 3, 21, 10, 2]
+    print()
+    squares(grid2) # 1 area: [64]
+    print()
+    squares(grid3) # 0 area: [0]
+    print()
+    squares(grid4) # 2 area1: [12, 17]
+    print()
+    squares(grid5) # 2 areas: [1,1]
+    print()
     
-    example_points = [(-2,2),(-2,0),(0,0),(1,1),(3,3),(4,0),(5,2)]
-    points(example_points)
-
-    testMerge:list[tuple[float, float]] = [(3, 3), (-2, 0), (1, 1), (-2, 2), (0, 0), (-1, -1)]
-    points(testMerge)
+    list_of_ints1:list[int] = [1,3,5,2,4,6] 
+    list_of_ints2:list[int] = [6,5,4,3,2,1]
+    list_of_ints3:list[int] = [1,2,3,4,5]
+    list_of_ints4:list[int] = []
+    list_of_ints5:list[int] = [1,1,1]
+    inversions(list_of_ints1) # 3 inversions [(5,2), (3,2), (6,4)]
+    print()
+    inversions(list_of_ints2) # 15 inversions [(6,5), (6,4), (6,3), (6,2), (6,1), (5,4), (5,3), (5,2), (5,1), (4,3), (4,2), (4,1), (3,2), (3,1), (2,1)]
+    print()
+    inversions(list_of_ints3) # 0 inversions
+    print()
+    inversions(list_of_ints4) # 0 inversions
+    print()
+    inversions(list_of_ints5) # 0 inversions
+    print()
+    
+    
+    points1:list[tuple[float, float]] = [(-2,2),(-2,0),(0,0),(1,1),(3,3),(4,0),(5,2)] #[(0,0), (1,1)]
+    points2:list[tuple[float, float]] = [(-2,2),(0,0),(-2,0),(1,1),(4,0),(3,3)] #[(0,0), (1,1)]
+    points3:list[tuple[float, float]] = [(3, 3), (-2, 0), (1, 1), (-2, 2), (0, 0), (-1, -1), (-1,1)] #[(-2, 0), (-1, -1)], [(-1, 1), (0, 0)], [(0, 0), (1, 1)], [(-1, -1), (0, 0)], [(-2, 2), (-1, 1)], [(-2, 0), (-1, 1)], [(0, 0), (-1, 1)], 
+    points4:list[tuple[float, float]] = [(0,0), (0,0), (2, 5), (3,3), (3,3)] # do not handle-- shouldn't receive duplicates: part of assumption
+    points6:list[tuple[float, float]] = [(2.5,1.5), (1.5, 2.5), (3.5,2.5)] # [(2.5, 1.5), (1.5, 2.5)], [(2.5, 1.5), (3.5, 2.5)]
+    points7:list[tuple[float, float]] = [(0.5,-0.5), (-0.5, 0.5), (1.5,0.5)] # [(0.5,-0.5), (-0.5, 0.5)], [(0.5, -0.5), (1.5,0.5)]
+    points5:list[tuple[float, float]] = []
+    points(points1)
+    print()
+    points(points2)
+    print()
+    points(points3)
+    print()
+    points(points4)
+    print()
+    points(points6)
+    print()
+    points(points7)
+    print()
+    points(points5)
+    print()
     
 
 if __name__ == "__main__":
