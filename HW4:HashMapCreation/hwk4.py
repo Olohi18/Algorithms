@@ -5,15 +5,11 @@ import math # pyright: ignore[reportUnusedImport]
 import time
 import csv          # Used to read a .csv file.
 
-# Next up: 
-    # Fix bug in reHash function. See first line under "Questions"
-    # Start the profiling part of the assignment
+# Note: I used type() to tell pylance that a function was of a certain type multiple times because there were situations where pylance didn't recongize that 
+# a variable could only be one of its initially multiple declared types. 
+
 # Design decisions
     # array of hashtable contains ints and hashnodes. Ints to represent empty slots and hashnodes to represent occupied spots
-# Questions
-    # my reHash doesn't seem to update the hashtable on the outside
-    # Am I allowed to add things to strings like string = "girl"; string += "boss" 
-
 ### DO NOT EDIT ###
 def new_array(size: int):
     """ Creates a new array of a given size.
@@ -38,8 +34,8 @@ class HashNode:
         :param value: (str) the value that will be added to the node
         :return : (HashNode) a pointer to the object
         """
-        self.key = key
-        self.value = value
+        self.key:int = key
+        self.value:str = value
         self.next: HashNode | None = None 
         
     def __str__(self) -> str:
@@ -61,7 +57,7 @@ class LinkedList:
         @param prev: (HashNode) the node after which to insert to_add
         @param to_add: (HashNode) the node to insert into the linked list
 
-        >>> insert(Node(5), Node(6))
+        >>> print(self.insert(Node(5), Node(6)))
         True
         """
         # if prev is None, set to_add as the head of the linkedlist
@@ -80,7 +76,7 @@ class LinkedList:
 
         @param prev: (HashNode) the node before the node to be removed from the linkedlist
         
-        >>> delete(Node(5))
+        >>> print(self.delete(Node(5)))
         True
         """
         if prev.next is None:
@@ -90,6 +86,14 @@ class LinkedList:
         return True
     
     def deleteKey(self, key:int) -> bool: #type: ignore override
+        """
+        Deletes the node with value key in the list
+
+        @param key: (int) the key of the node before the node to be removed from the linkedlist
+        
+        >>> print(self.delete(Node(5)))
+        True
+        """
         if self.head is None:
             return False
         elif self.head.key == key:
@@ -155,8 +159,8 @@ class HashTable:
         @param hash_choice: (int) determines the hash function to be applied
         """
         self.size:int = size
-        self.hash_choice:int = hash_choice                  # Which hash function you will use.
-        #TODO Finish constructor...
+        self.hash_choice:int = hash_choice                  
+        
         self.arrayHash: list[int | HashNode] = [0] * self.size # unoccupied areas are represent with ints. Occupied slots with Hashnodes
         self.occupied:int = 0
         pass
@@ -169,16 +173,24 @@ class HashTable:
         number_printed: int = 0
         array_index: int = 0
         while number_printed <= self.occupied and array_index < self.size:
-            if self.arrayHash[array_index] != 0:
-                current = self.arrayHash[array_index]
+            current = self.arrayHash[array_index]
+            if self.arrayHash[array_index] != 0 and type(current) == HashNode:
                 while current:
-                    string += (f"{current.key}: {current.value},\n") # how do I tell pylance that I'm sure that current is a node
+                    string += (f"{current.key}: {current.value},\n")
                     current = current.next
                     number_printed += 1
             array_index += 1
         return string + "}\n"
         
     def hashFunc(self, key:int) -> int|None:
+        """
+        Returns the index of, key, in the hashtable
+
+        @param key: (int) the key to be added to or accessed in the hashtable
+
+        >>> hashFunc(1)
+        True
+        """
         if type(key) != int:
             return None
         if self.hash_choice == 0:
@@ -192,6 +204,7 @@ class HashTable:
             else:
                 return key % self.size
         elif self.hash_choice == 3:
+            # Constant multiplication method
             # slightly more complex: multiply by 0 < constant < 1
             constant:float = 0.8
             if key < 0:
@@ -203,8 +216,19 @@ class HashTable:
             else:
                 return index % self.size
         elif self.hash_choice == 4:
-            # do research on an SHA function if time allows. If not, put another simple one
-            pass
+            # similar to self.hash_choice == 2 except that it includes unneccessary if-else statements
+            if key < 50:
+                if key % 2 == 0:
+                    return (key + self.size) % self.size
+                else:
+                    return (key + self.size) % self.size
+            elif 50 <= key <= 100:
+                if key % 2 == 0:
+                    return (key + self.size) % self.size
+                else:
+                    return (key + self.size) % self.size
+            else:
+                return key % self.size
         return None
     
     def insert(self, key:int, val:str) -> bool: 
@@ -214,8 +238,8 @@ class HashTable:
 
         @param key: (int) the key to be inserted into the hashtable
         @param val: (str) the value of the key to be inserted into the hashtable
-        >>> ll = new LinkedList()
-        >>> ll.insert(5, "apple")
+        >>> hash_table = (2, "milk") -> (4, "girl")
+        >>> hash_table.insert(5, "apple")
         True
         """
         if self.isOverLoadFactor():
@@ -249,17 +273,16 @@ class HashTable:
 
         @param key: (int) the key to be inserted into the hashtable
         @param val: (str) the value of the key to be inserted into the hashtable
-        >>> ll = new LinkedList()
-        >>> ll.insert(5, "apple")
+        >>> hash_table = (2, "milk") -> (4, "girl")
+        >>> hash_table.insertNode(HashNode(5, "apple"_)
         True
         """
         if self.isOverLoadFactor():
-            print(f"entered rehASH")
             self.reHash()
         if self.contains(new_node.key) is True: # implement a search function 
             return False
         if self.hashFunc(new_node.key) is not None: 
-            index:int = self.hashFunc(new_node.key) #type: ignore
+            index:int = self.hashFunc(new_node.key) #type: ignore because self.arrayHash[index] must be a HashNode at this point
             if self.arrayHash[index] == 0:
                 self.occupied += 1
                 self.arrayHash[index] = new_node
@@ -280,9 +303,8 @@ class HashTable:
         @param key: (int) the key whose value is to be found 
         @return val: (str) the value associated with key or None if key is not in hashtable
 
-        >>> ll = new LinkedList()
-        >>> ll.insert(5, "apple")
-        >>> ll.getValue(5)
+        >>>  hash_table = (2, "milk") -> (4, "girl")
+        >>> hash_table.getValue(5)
         "apple"
         """
         index: int = self.hashFunc(key) #type: ignore
@@ -291,6 +313,7 @@ class HashTable:
         else:
             current = self.arrayHash[index]
             while current:
+                assert type(current) is HashNode
                 if current.key == key:
                     return current.value
                 current = current.next
@@ -302,10 +325,9 @@ class HashTable:
 
         @param key: (int) the key to be removed from the linkedlist
 
-        >>> ll = new LinkedList()
-        >>> ll.insert(5, "apple")
-        >>> ll.remove(5, "apple)
-        True
+        >>> hash_table = (2, "milk") -> (4, "girl")
+        >>> hash_table.remove(5, "apple)
+        False
         """
         index: int = self.hashFunc(key) #type: ignore
         current:HashNode|int = self.arrayHash[index]
@@ -337,7 +359,7 @@ class HashTable:
         """
         Returns true if the load factor for the hashtable >= 0.7
         
-        >>> ll.isOverLoadFactor()
+        >>> hash_table.isOverLoadFactor()
         True
         """
         load:float = self.occupied/self.size
@@ -347,34 +369,38 @@ class HashTable:
         """
         Rehashes all of the key,value pairs onto a new hash table
         """
-        
-        prev_array = self.arrayHash
-        new_table = HashTable(self.size*2, self.hash_choice)
-        self = new_table
-        self.size = new_table.size
-        self.hash_choice = new_table.hash_choice
-        # iterate through current hashtable array
-        for i in range(len(prev_array)):
-            # iterate through the linkedlists of every element and add them to new_array based on a rehash
-            if prev_array[i] == 0:
+        new_size = self.size * 2
+        new_arrayHash:list[int|HashNode] = [0] * new_size
+
+        for i in range(self.size):
+            if self.arrayHash[i] == 0 and type(self.arrayHash[i]) == int:
                 continue
             else:
-                current:HashNode = prev_array[i]
-                while current:
-                    self.insertNode(current) 
-                    current = current.next
-        # print(f"current length is {self.size} which is  > than previous size of {len(prev_array)}")
+                new_arrayHash[i] = self.arrayHash[i]
+
+        self.size = new_size
+        self.arrayHash = new_arrayHash
         return True
 
-        # reset self.arrayHash to new_array and update self.size
-        # self.occupied and self.hashchoice should remain the same
     
     def contains(self, key:int):
+        """
+        Checks if the key, key, is contained in the hashtable
+
+        @param key: (int) the key to be searched for in the hashtable
+
+        >>> hash_table = (2, "milk") -> (4, "girl")
+        >>> hash_table.contains(5, "apple)
+        False
+        """
+        if self.hashFunc(key) is None:
+            return False
         for current in self.arrayHash:
             if current == 0:
                 continue
             else:
                 while current:
+                    assert type(current) is HashNode
                     if current.key == key: # current is a Node so ignore type error
                         return True
                     current = current.next
@@ -388,6 +414,7 @@ def testMain() -> None:
     test_map:HashTable = HashTable(initial_bucket_size, hash_choice)
 
     # Test for insert-- when hash function initialized, insert should call rehash within
+    print("--------------TEST FOR INSERT()------------------")
     print(f"Result of insert is {test_map.insert(5, "apple")}")
     print(f"Result of insert is {test_map.insert(1, "mango")}")
     print(f"Result of insert is {test_map.insert(2, "fish")}")
@@ -398,29 +425,37 @@ def testMain() -> None:
     print()
     print(f"Result of insertNode is {test_map.insertNode(HashNode(7, "milk"))}")
     print()
+
+    print("------------TEST FOR CONTAINS-------------")
     print(f"hashmap contains {0}: {test_map.contains(0)}")
-    print(test_map)
+    print()
 
-    # # Test for getValue
-    # print(test_map.getValue(2)) # girl
-    # print(test_map.getValue(89)) # None
-    # print()
+    # Test for getValue
+    print("------------TEST FOR GETVALUE---------")
+    print(test_map.getValue(2)) # girl
+    print(test_map.getValue(89)) # None
+    print()
 
-    # # Test for remove
-    # print(test_map.remove(5)) # True
-    # print(test_map.remove(5)) # False
-    # print()
+    # Test for remove
+    print("------------TEST FOR REMOVE()---------")
+    print(test_map.remove(5)) # True
+    print(test_map.remove(5)) # False
+    print()
 
     # Test for isOverLoadFactor() -- retest after creating your hash functions
+    print("--------------TEST FOR isOverLoadFactor()------------------")
     print(f"length of hash is {test_map.size} and there are {test_map.occupied} occupied slots\n")
     print(test_map.isOverLoadFactor()) # True
+    print()
+
+    print("--------------TEST FOR INSERT()------------------")
     print(f"Result of insert is {test_map.insert(9, "boy")}")
     print(f"Result of insert is {test_map.insert(10, "boy")}")
     print(f"Result of insert is {test_map.insert(11, "boy")}")
     print(f"Result of insert is {test_map.insert(12, "boy")}")
     print()
     print(f"length of hash is {test_map.size} and there are {test_map.occupied} occupied slots\n") # problem: test_map doesn't seem updated
-    print(test_map.isOverLoadFactor()) # True
+    print(test_map.isOverLoadFactor()) # False
     print()
     print(test_map)
 
@@ -486,9 +521,9 @@ def releaseMain() -> None:
 
 def profilerMain() -> None:    
     # You should update these three values as you profile your implementation.
-    num_hash_implemented = 2    
-    initial_bucket_size = 10 
-    initial_num_to_add = 100
+    num_hash_implemented = 5    
+    initial_bucket_size = 50
+    initial_num_to_add = 10
 
     for i in range(0, num_hash_implemented):        
         hash_table = HashTable(initial_bucket_size, i)
@@ -503,19 +538,31 @@ def profilerMain() -> None:
             #### Start of code you want to profile ####
             
             # Add/Edit code to profile
+            """Test Insertion"""
             row = csv_reader.__next__() 
             hash_table.insert(int(row[0]),row[1])
+            # for _ in range(5):
+            #     row = csv_reader.__next__() 
+            #     hash_table.insert(int(row[0]),row[1])
+            """Test Removal"""
+            # hash_table.remove(134)
+            # array_of_nums = [12, 52, 531, 215, 18]
+            # for num in array_of_nums:
+            #     hash_table.remove(num)
+            """Test Printing"""
+            # print(hash_table)
             
             #### End of code you want to profile ####
             end_time_create = time.time()      # Get end Time. 
             calc = end_time_create - start_time_create  
             print("Hash Map", i, "Test \tTime:", calc, "seconds.")
+
         
     
 
 if __name__ == "__main__":
     # Swap these options to profile or test your code.
-    testMain()
-    #profilerMain()     
+    #testMain()
+    profilerMain()     
     #releaseMain()
     
