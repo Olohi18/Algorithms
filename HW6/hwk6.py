@@ -1,12 +1,10 @@
-# Name:  - your name (and your partners name) <br>
-# Peers:  - names of CSC252 students who you consulted or ``N/A'' <br>
-# References:  - URL of resources used <br>
+# Name:  Olohi John
+# Peers: Catherine Weeks
+# References:  
 from collections import deque
-# Question: can a graph neither be undirected nor a DAG?
-# Can we use a hshset
-# Can we assume every node in teh graph would be a key in the hashmap?
-# Assumption: State assumption for keys in dictionary. Keys, which are leaf nodes, are included in dictionary with a value of '[]', an empty list
-# Assumption: Start and end nodes passed into findBFS are in the graph, ie no need to check whether a node is or is not a key in the graph
+# Assumption: Keys, which are leaf nodes in the graph, are simply included as a key in the adjacency list with a value of '[]', an empty list
+# Assumption: nodes passed as parameters into the functions are guaranteed to be keys in the graph, ie no need to check the edge 
+# case of whether a parameter node is in the graph
 
 #### DO NOT EDIT - START ####
 def POL_helper():
@@ -15,6 +13,15 @@ def POL_helper():
 
 # Part 1: DAG2UG
 def convertDAGToUG(dag_graph:dict[str|int, list[str|int]]) -> dict[str|int, list[str|int]]: 
+    """
+    Converts a DAG to an undirected graph
+
+    @param dag_graph: (dict) an adjacency list representation of a DAG
+    @return ug: (dict) an adjacency list representation of the resulting undirected graph
+
+    >>> convertDAGToUG({'a': ['b', 'c'], 'b': ['c'], 'c': []})
+    {'a': ['b', 'c'], 'b': ['a', 'c'], 'c': ['a', 'b']}
+    """
     # initialize a new hash map            
     ug: dict[str|int, list[str|int]] = {}
     
@@ -43,6 +50,15 @@ def convertDAGToUG(dag_graph:dict[str|int, list[str|int]]) -> dict[str|int, list
     return ug
 
 def isIn(val:str | int, array:list[str | int]):
+    """
+    Helper function that returns whether or not an element is in an array
+
+    @param val: (str) the element whose containment in array is to be checked
+    @param array: (list) the array to be searched
+
+    >>> isIn(5, [2, 5, 7])
+    False
+    """
     for elem in array:
         if elem == val:
             return True
@@ -53,6 +69,15 @@ def isIn(val:str | int, array:list[str | int]):
 
 # Part 2: BFS            
 def findBFSPath(graph:dict[str|int, list[str|int]], start_node:str, end_node:str) -> list[str|int] | None:
+    """
+    Returns the shortest path between two nodes in a graph
+
+    @param graph: (dict) an adjacency list representation of the graph
+    @param start_node, end_node: (str), (str) the nodes whose shortest path between is to be returned
+
+    >>> findBFSPath(['alice', 'bob'], 'bob': ['peggy'], 'alice': ['claire'], 'claire': ['tom', 'jonny'], 'peggy': [], 'tom': [], 'jonny': []}, 'alice', 'jonny')
+    ['alice', 'claire', 'jonny']
+    """
     queue:deque[str|int] = deque()
     visited:dict[str|int, str|int] = dict()
     queue.append(start_node)
@@ -69,6 +94,16 @@ def findBFSPath(graph:dict[str|int, list[str|int]], start_node:str, end_node:str
     return None
 
 def path(visited:dict[str|int, str|int], popped:str|int, start:str|int) -> list[str|int]:
+    """
+    Helper function that returns the path between two nodes, given their backtracking hashmap
+
+    @param visited: (dict) a map of node, prev pairs
+    @param popped: (str|int) the node to start backtracking from
+    @param start: (str|int) the node to stop backtracking at
+
+    >>> path({'b': 'a', 'c': 'a', 'a': 'b', 'd': 'b'}, d)
+    ['a', 'b', 'd']
+    """
     result:list[str|int] = []
     current:str|int = popped
     while current != start:
@@ -86,6 +121,14 @@ def path(visited:dict[str|int, str|int], popped:str|int, start:str|int) -> list[
 
 # Part 3: ISCYCLIC
 def isCyclic(graph:dict[str|int, list[str|int]]) -> bool:
+    """
+    Returns whether or not a graph contains a cycle
+
+    @param graph: (dict) an adjacency list representation of the graph
+
+    >>> isCyclic({"a":["b", "c"], "b":["c"], "c":["d"], "d":["a"]})
+    True
+    """
     # iterate through keys in the graph
     for key in graph:
         # if findPath(key, key) == True, return False
@@ -95,6 +138,15 @@ def isCyclic(graph:dict[str|int, list[str|int]]) -> bool:
     return False
 
 def isCylicHelper(key:str|int, graph:dict[str|int, list[str|int]]) ->bool:
+    """
+    Helper function that checks if you can traverse back to a key from itself
+
+    @param key: (str|int) a key in the graph
+    @param graph: (dict) an adjacency list represenation of the graph
+
+    >>> ('a', {"a":["b", "c"], "b":["c"], "c":["d"], "d":["a"]})
+    True
+    """
     # initialize a queue
     queue:deque[str|int] = deque()
     # initialize a hashset
@@ -124,6 +176,14 @@ def isCylicHelper(key:str|int, graph:dict[str|int, list[str|int]]) ->bool:
 
 # Part 4: ISCONNECTED
 def isConnected(graph:dict[str|int, list[str|int]]) -> bool:
+    """
+    Checks if a graph is connected
+
+    @param graph: (dict) an adjacency list representation of the graph
+
+    >>> isConnected({'a': ['b', 'c'], 'b': ['c'], 'c': []})
+    True
+    """
     # iterate through graph keys
     for key in graph:
         # iterate through graph keys
@@ -138,6 +198,13 @@ def isConnected(graph:dict[str|int, list[str|int]]) -> bool:
     return True
 
 def findPathHelper(graph:dict[str|int, list[str|int]], node1:str|int, node2:str|int) -> bool:
+    """
+    Checks if a path exists between node1 and node2 in graph
+
+    @param graph: (dict) an adjacency list represenation of the graph 
+    @param node1: (str|int) first node in graph
+    @param node2: (str|int) second node in graph
+    """
     # initialize a queue
     path_queue:deque[str|int] = deque()
     hash_set:set[int|str] = set()
