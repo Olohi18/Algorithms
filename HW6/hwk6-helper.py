@@ -14,6 +14,7 @@ def getSmallDirectedExample() -> dict[str|int, list[str|int]]:
     graph["jonny"] = []
     return graph
 
+
 def main():
     POL_helper()    #Test is hwk6.py imported correctly.
     # Examples
@@ -27,6 +28,8 @@ def main():
     graph7:dict[str|int, list[str|int]] = {"a": ["b", "c"], "b": ["a", "c", "f"], "c": ["a", "b", "d", "f"], "d": ["c", "f"], "e": [], "f": ["c", "d", "e", "b"]}
     graph8:dict[str|int, list[str|int]] = {"a": ["b", "c"], "b": ["d"], "c": ["d"], "d": []} # multiple short paths (DAG form)
     graph9:dict[str|int, list[str|int]] = convertDAGToUG(graph8)
+    graph10:dict[str|int, list[str|int]] = {"a": ["b", "c"], "b": ["d"], "c": ["d"]}
+    graph11:dict[str|int, list[str|int]] = {"a": ["b", "g", "f"], "b": ["c"], "g":["c"], "c":["e"], "e":["f"]}
     print()
     print(f"-------- Convert DAG to Bidirected Graph ---------")
     print(f"DAG is {dag_graph}")
@@ -58,12 +61,18 @@ def main():
     print()
 
     print(f"------- isConnected Test -------")
-    print(f"Grpah2 is {graph2}")
+    print(f"Graph2 is {graph2}")
     print(f"Graph2 is connected: {isConnected(convertDAGToUG(graph2))}") # True
     print(f"Graph3 is connected: {isConnected(convertDAGToUG(graph3))}") # True
     print(f"Dag Graph is connected: {isConnected(convertDAGToUG(dag_graph))}") # True
     print(f"Graph5 is connected: {isConnected(convertDAGToUG(graph5))}") # False
     print(f"Graph3 is connected: {isConnected(convertDAGToUG(graph4))}") # False
+    print()
+
+    print(f"------- Topological Sort --------")
+    print(f"Topological Sorted is {topoSort(graph10)}")
+    print(f"Topological Sorted is {topoSort(graph11)}")
+    
 
 
 if __name__ == "__main__":

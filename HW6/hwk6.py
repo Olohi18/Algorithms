@@ -172,8 +172,6 @@ def isCylicHelper(key:str|int, graph:dict[str|int, list[str|int]]) ->bool:
     # return False
     return False
 
-    
-
 # Part 4: ISCONNECTED
 def isConnected(graph:dict[str|int, list[str|int]]) -> bool:
     """
@@ -184,50 +182,83 @@ def isConnected(graph:dict[str|int, list[str|int]]) -> bool:
     >>> isConnected({'a': ['b', 'c'], 'b': ['c'], 'c': []})
     True
     """
-    # iterate through graph keys
-    for key in graph:
-        # iterate through graph keys
-        for sec_key in graph:
-            # avoid checking path between a node and itself
-            if key == sec_key:
-                continue
-            # if no path exists between two keys, return False
-            else:
-                if findPathHelper(graph, key, sec_key) is False:
-                    return False
-    return True
+    start:str|int = list(graph)[0]
+    queue:deque[str|int] = deque()
+    set_store:set[str|int] = set()
+    queue.append(start)
+    set_store.add(start)
 
-def findPathHelper(graph:dict[str|int, list[str|int]], node1:str|int, node2:str|int) -> bool:
-    """
-    Checks if a path exists between node1 and node2 in graph
+    while queue:
+        popped:str|int = queue.popleft()
+        for n in graph[popped]:
+            if n not in set_store:
+                queue.append(n)
+                set_store.add(n)
 
-    @param graph: (dict) an adjacency list represenation of the graph 
-    @param node1: (str|int) first node in graph
-    @param node2: (str|int) second node in graph
-    """
-    # initialize a queue
-    path_queue:deque[str|int] = deque()
-    hash_set:set[int|str] = set()
-
-    # push node1 to the queue
-    path_queue.append(node1)
-    hash_set.add(node1)
-    # set a while loop that runs while the queue is not empty
-    while len(path_queue) != 0:
-        # pop element from queue
-        popped:str|int = path_queue.popleft()
-        # check if it's equal to node2, if yes, return True
-        if popped == node2:
-            return True
-        # else, push the popped's neighbors
-        for value in graph[popped]:
-            if value not in hash_set:
-                path_queue.append(value)
-                hash_set.add(value)
-
-    return False
+    return len(set_store) == len(graph)
 
 # Part 5: TOPOSORT
-"""def topoSort(graph:dict) -> list:
-    return None
-"""
+def topoSort(graph:dict[str|int, list[str|int]]) -> list[str|int]:
+    """
+    Returns the nodes in a graph in topological order
+
+    @param graph: (dict) an adjacency list represenation of a graph
+    @return sorted: (list) a list of the vertices in the input graph, sorted topologically
+
+    >>> topoSort({"a": ["b", "c"], "b": ["d"], "c": ["d"]})
+    [a, b, c, d]
+    """
+    sorted:list[str|int] = []
+    visited:set[str|int] = set()
+    for key in graph:
+        if key not in visited:
+            visited.add(key)
+            helperTopo(graph, key, sorted, visited)
+    return sorted
+
+def helperTopo(graph:dict[str|int, list[str|int]], key:str|int, sorted:list[str|int], visited:set[str|int]) -> None:
+    """
+    Helper function that appends performs a DFS on the graph and appends its nodes to a list topologically
+
+    @param graph: (dict) an adjacency list represenation of a graph
+
+    >>> topoSort({"a": ["b", "c"], "b": ["d"], "c": ["d"]})
+    """
+    neighbors = graph[key] if key in graph else []
+    for n in neighbors:
+        if n not in visited:
+            visited.add(n)
+            helperTopo(graph, n, sorted, visited)
+    sorted.insert(0, key)
+
+
+"""def topoSort(graph:dict[str|int, list[str|int]]) -> list[str|int]:
+    sorted:list[str|int] = []
+    visited:set[str|int] = set()
+    for key in graph:
+        if key not in visited:
+            visited.add(key)
+            result:list[str|int] = helperTopo(graph, key, visited)
+            print(f"result is {result}")
+            sorted += [key] + result
+
+    return sorted
+
+def helperTopo(graph:dict[str|int, list[str|int]], key:str|int, visited:set[str|int]) -> list[str|int]:
+    neighbors:list[str|int] = []
+    if key not in graph:
+        return []
+    neighbors:list[str|int] = graph[key]
+    print(f"neighbors are {neighbors}")
+    visited.add(key)
+    result:list[str|int] = []
+    for n in neighbors:
+        if n not in visited:
+            result += [n]
+    for n in neighbors:
+        if n not in visited:
+            visited.add(n)
+            result += helperTopo(graph, n, visited)
+    return result"""
+
+
