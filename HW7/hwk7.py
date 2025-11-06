@@ -367,7 +367,7 @@ def printTree(root:BTNode|None) -> None:
                     # push None to the queue twice and print a '_'
                     queue.appendleft(None)
                     queue.appendleft(None)
-                    print(f"_", end = "")
+                    print(f"__", end = "")
             # else (popped is not None)
             else:
                 # push its children to the queue
